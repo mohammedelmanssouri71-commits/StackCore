@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        td{
+            cursor: pointer;
+        }
+    </style>
+    <title>Document</title>
+</head>
+<body>
+    <table>
+        <tr>
+            <th>id</th>
+            <th>nom</th>
+            <th>prix</th>
+            <th>stock</th>
+            <th>etat</th>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>Produit 1</td>
+            <td>19.99</td>
+            <td>50</td>
+            <td>
+                nondisponible
+                Disponible
+            </td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>Produit 2</td>
+            <td>29.99</td>
+            <td>30</td>
+            <td>
+                nondisponible
+                Disponible
+            </td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td>Produit 3</td>
+            <td>14.99</td>
+            <td>75</td>
+            <td>
+                nondisponible
+                Disponible
+            </td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td>Produit 4</td>
+            <td>39.99</td>
+            <td>20</td>
+            <td>
+                nondisponible
+                Disponible
+            </td>
+        </tr>
+        <tr>
+            <td>5</td>
+            <td>Produit 5</td>
+            <td>9.99</td>
+            <td>100</td>
+            <td>
+                nondisponible
+                Disponible
+            </td>
+        </tr>
+    </table>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $('td:not(:contains("Disponible"))').dblclick(function(){
+                let text = trim($(this).text());
+                $(this).html(`<input type='text' value='${text}'>`);
+                $(this).children('input').focus();
+                
+            })
+            $('td:contains("Disponible")').dblclick(function(){
+                let text = $(this).text();
+                $(this).html(`<textarea type='text'>${text}</textarea>`);
+                $(this).children('textarea').focus();
+            })
+            $(document).on('blur', 'td input , td textarea', function(){
+                let text = $(this).val();
+                $(this).parent().html(text);
+            })
+        })
+    </script>
+</body>
+</html>

@@ -4,15 +4,11 @@ pipeline {
         SONARQUBE = 'SonarQube'
     }
     stages {
-        stage('Checkout') {
+        stage('Checkout') { steps { checkout scm } }
+        stage('Build & SonarQube') {
             steps {
-                checkout scm
-            }
-        }
-        stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv(SONARQUBE) {
-                    bat "sonar-scanner -Dsonar.projectKey=StackCore -Dsonar.sources=."
+                withSonarQubeEnv('SonarQube') {
+                    bat 'sonar-scanner'
                 }
             }
         }
@@ -26,10 +22,10 @@ pipeline {
     }
     post {
         success {
-            echo 'Build et analyse OK'
+            githubNotify context: 'CI Pipeline', status: 'SUCCESS', description: 'Build OK'
         }
         failure {
-            echo 'Échec du build ou du Quality Gate'
+            githubNotify context: 'CI Pipeline', status: 'FAILURE', description: 'Build failed'
         }
     }
 }

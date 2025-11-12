@@ -1,13 +1,15 @@
 pipeline {
     agent any
     environment {
-        SONARQUBE = 'SonarQube'
+        SONARQUBE = 'SonarQube' // Nom du serveur SonarQube dans Jenkins
     }
     stages {
-        stage('Checkout') { steps { checkout scm } }
-        stage('Build & SonarQube') {
+        stage('Checkout') {
+            steps { checkout scm }
+        }
+        stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('SonarQube') {
+                withSonarQubeEnv(SONARQUBE) {
                     bat 'sonar-scanner'
                 }
             }
@@ -29,4 +31,3 @@ pipeline {
         }
     }
 }
-

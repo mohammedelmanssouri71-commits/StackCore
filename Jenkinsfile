@@ -20,13 +20,16 @@ pipeline {
                     timeout(time: 2, unit: 'MINUTES') {
                         def qg = waitForQualityGate()
                         if (qg.status != 'OK') {
+                            echo "La Quality Gate a échoué : ${qg.status}"
                             currentBuild.result = 'FAILURE' // Marque le build comme échoué
-                            error "La Quality Gate a échoué : ${qg.status}"
+                            // ne pas utiliser error() ici
+                        } else {
+                            echo "Quality Gate OK"
                         }
                     }
                 }
             }
-        }   
+        }  
     }
     post {
         success {

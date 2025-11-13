@@ -1,37 +1,46 @@
 pipeline {
     agent any
+
     environment {
         SONARQUBE = 'SonarQube' // Nom du serveur SonarQube dans Jenkins
     }
+
     stages {
         stage('Checkout') {
-            steps { checkout scm }
+            steps {
+                checkout scm
+            }
         }
+
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv(SONARQUBE) {
-                    bat 'sonar-scanner'
+                    bat 'sonar-scanner' // ou sh 'sonar-scanner' selon OS
                 }
             }
         }
+
         stage('Quality Gate') {
             steps {
                 script {
                     timeout(time: 2, unit: 'MINUTES') {
                         def qg = waitForQualityGate()
+                        echo "Quality Gate status: ${qg.status}"
                         if (qg.status != 'OK') {
-                            echo "La Quality Gate a échoué : ${qg.status}"
-                            currentBuild.result = 'FAILURE' // Marque le build comme échoué
-                            // ne pas utiliser error() ici
-                        } else {
-                            echo "Quality Gate OK"
+                            // Marque le build comme échoué sans utiliser error()
+                            currentBuild.result = 'FAILURE'
                         }
                     }
                 }
             }
-        }  
+        }
     }
+
     post {
+        always {
+            echo "Pipeline terminé avec statut : ${currentBuild.result}"
+        }
+
         success {
             emailext (
                 to: 'mohammedelmanssouri71@gmail.com',
@@ -44,6 +53,7 @@ pipeline {
             )
             githubNotify context: 'CI Pipeline', status: 'SUCCESS', description: 'Build OK'
         }
+
         failure {
             emailext (
                 to: 'mohammedelmanssouri71@gmail.com',

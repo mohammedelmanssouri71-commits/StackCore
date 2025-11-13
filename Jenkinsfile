@@ -16,11 +16,17 @@ pipeline {
         }
         stage('Quality Gate') {
             steps {
-                timeout(time: 2, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
+                script {
+                    timeout(time: 2, unit: 'MINUTES') {
+                        def qg = waitForQualityGate()
+                        if (qg.status != 'OK') {
+                            currentBuild.result = 'FAILURE' // Marque le build comme échoué
+                            error "La Quality Gate a échoué : ${qg.status}"
+                        }
+                    }
                 }
             }
-        }
+        }   
     }
     post {
         success {

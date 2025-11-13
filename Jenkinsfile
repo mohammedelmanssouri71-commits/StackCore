@@ -24,16 +24,19 @@ pipeline {
             steps {
                 script {
                     timeout(time: 2, unit: 'MINUTES') {
-                        def qg = waitForQualityGate()
-                        echo "Quality Gate status: ${qg.status}"
-                        if (qg.status != 'OK') {
-                            // Marque le build comme échoué sans utiliser error()
-                            currentBuild.result = 'FAILURE'
+                        catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+                            def qg = waitForQualityGate()
+                            echo "Quality Gate status: ${qg.status}"
+                            if (qg.status != 'OK') {
+                                // juste un echo, l'échec est géré par catchError
+                                echo "La Quality Gate a échoué : ${qg.status}"
+                            }
                         }
                     }
                 }
             }
         }
+
     }
 
     post {
